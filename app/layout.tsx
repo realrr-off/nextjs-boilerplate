@@ -1,5 +1,6 @@
 import "./globals.css"
 import type { Metadata } from "next"
+import Navbar from "@/components/Navbar"
 
 export const metadata: Metadata = {
   title: "Realrr Dev Toolkit",
@@ -14,7 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black text-white antialiased">
-        {children}
+        <Navbar />
+        <main className="min-h-screen">
+          {children}
+        </main>
       </body>
     </html>
   )
