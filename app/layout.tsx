@@ -1,10 +1,11 @@
 import "./globals.css"
 import type { Metadata } from "next"
-import Navbar from "@/components/Navbar"
+import AuthProvider from "@/components/auth/AuthProvider"
+import UsernamePrompt from "@/components/auth/UsernamePrompt"
 
 export const metadata: Metadata = {
-  title: "Realrr Dev Toolkit",
-  description: "Roblox Development Toolkit Platform",
+  title: "Creative Developer | Personal Portfolio",
+  description: "Crafting premium digital experiences and high-performance digital solutions.",
 }
 
 export default function RootLayout({
@@ -15,10 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black text-white antialiased">
-        <Navbar />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <AuthProvider>
+          <UsernamePrompt />
+          <main className="min-h-screen">
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   )
