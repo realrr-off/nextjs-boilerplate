@@ -3,9 +3,11 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useScroll } from 'framer-motion';
 
 export default function ParticleGlobe({ radius = 2, count = 1000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
+    const { scrollYProgress } = useScroll();
 
     const particles = useMemo(() => {
         const positions = new Float32Array(count * 3);
@@ -22,12 +24,21 @@ export default function ParticleGlobe({ radius = 2, count = 1000 }) {
 
     useFrame((state) => {
         if (!pointsRef.current) return;
-        pointsRef.current.rotation.y += 0.002;
-        pointsRef.current.rotation.x += 0.001;
 
-        // Scale pulse effect
-        const scale = 1 + Math.sin(state.clock.elapsedTime) * 0.05;
-        pointsRef.current.scale.set(scale, scale, scale);
+        const scroll = scrollYProgress.get();
+        // Visible between 0.4 and 0.8 scroll
+        const isVisible = scroll > 0.4 && scroll < 0.8;
+        pointsRef.current.visible = isVisible;
+
+        if (isVisible) {
+            pointsRef.current.position.y = (scroll - 0.4) * 10 - 5;
+            pointsRef.current.rotation.y += 0.002;
+            pointsRef.current.rotation.x += 0.001;
+
+            // Scale pulse effect
+            const scale = 1 + Math.sin(state.clock.elapsedTime) * 0.05;
+            pointsRef.current.scale.set(scale, scale, scale);
+        }
     });
 
     return (
@@ -35,9 +46,11 @@ export default function ParticleGlobe({ radius = 2, count = 1000 }) {
             <bufferGeometry>
                 <bufferAttribute
                     attach="attributes-position"
-                    count={particles.length / 3}
-                    array={particles}
-                    itemSize={3}
+                    {...({
+                        count: particles.length / 3,
+                        array: particles,
+                        itemSize: 3,
+                    } as any)}
                 />
             </bufferGeometry>
             <pointsMaterial

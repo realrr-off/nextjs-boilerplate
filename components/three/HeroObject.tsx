@@ -3,14 +3,22 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { MeshDistortMaterial, Float, MeshWobbleMaterial } from '@react-three/drei';
+import { Float, MeshWobbleMaterial } from '@react-three/drei';
+import { useScroll } from 'framer-motion';
 
 export default function HeroObject() {
     const meshRef = useRef<THREE.Mesh>(null!);
     const glowRef = useRef<THREE.Mesh>(null!);
+    const groupRef = useRef<THREE.Group>(null!);
+    const { scrollYProgress } = useScroll();
 
     useFrame((state) => {
-        if (!meshRef.current) return;
+        if (!meshRef.current || !groupRef.current) return;
+
+        // Scroll based opacity and position
+        const scroll = scrollYProgress.get();
+        groupRef.current.position.y = -scroll * 2;
+        groupRef.current.visible = scroll < 0.5;
 
         // Smooth mouse parallax
         const targetX = state.mouse.x * 0.5;
@@ -26,45 +34,47 @@ export default function HeroObject() {
     });
 
     return (
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-            <group>
-                {/* Main Panel */}
-                <mesh ref={meshRef}>
-                    <boxGeometry args={[3, 2, 0.1]} />
-                    <meshStandardMaterial
-                        color="#1a1b3b"
-                        metalness={0.9}
-                        roughness={0.1}
-                        transparent
-                        opacity={0.8}
-                        emissive="#2d46fa"
-                        emissiveIntensity={0.5}
-                    />
-                </mesh>
+        <group ref={groupRef}>
+            <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
+                <group>
+                    {/* Main Panel */}
+                    <mesh ref={meshRef}>
+                        <boxGeometry args={[3, 2, 0.1]} />
+                        <meshStandardMaterial
+                            color="#1a1b3b"
+                            metalness={0.9}
+                            roughness={0.1}
+                            transparent
+                            opacity={0.8}
+                            emissive="#2d46fa"
+                            emissiveIntensity={0.5}
+                        />
+                    </mesh>
 
-                {/* Outer Glow Wireframe */}
-                <mesh ref={glowRef} scale={[1.05, 1.05, 1.05]}>
-                    <boxGeometry args={[3, 2, 0.1]} />
-                    <meshBasicMaterial
-                        color="#2d46fa"
-                        wireframe
-                        transparent
-                        opacity={0.3}
-                    />
-                </mesh>
+                    {/* Outer Glow Wireframe */}
+                    <mesh ref={glowRef} scale={[1.05, 1.05, 1.05]}>
+                        <boxGeometry args={[3, 2, 0.1]} />
+                        <meshBasicMaterial
+                            color="#2d46fa"
+                            wireframe
+                            transparent
+                            opacity={0.3}
+                        />
+                    </mesh>
 
-                {/* Decorative inner elements */}
-                <mesh position={[0, 0, 0.06]}>
-                    <planeGeometry args={[2.8, 1.8]} />
-                    <MeshWobbleMaterial
-                        factor={0.1}
-                        speed={1}
-                        color="#4f46e5"
-                        opacity={0.1}
-                        transparent
-                    />
-                </mesh>
-            </group>
-        </Float>
+                    {/* Decorative inner elements */}
+                    <mesh position={[0, 0, 0.06]}>
+                        <planeGeometry args={[2.8, 1.8]} />
+                        <MeshWobbleMaterial
+                            factor={0.1}
+                            speed={1}
+                            color="#4f46e5"
+                            opacity={0.1}
+                            transparent
+                        />
+                    </mesh>
+                </group>
+            </Float>
+        </group>
     );
 }

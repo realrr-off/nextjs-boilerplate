@@ -39,24 +39,8 @@ export default function Home() {
     <>
       <Sidebar />
       <SceneCanvas>
-        <motion.group
-          style={{
-            y: useTransform(springScroll, [0, 1000], [0, -2]),
-            opacity: useTransform(springScroll, [0, 500], [1, 0])
-          }}
-        >
-          <HeroObject />
-        </motion.group>
-
-        <motion.group
-          position={[0, -5, 0]}
-          style={{
-            y: useTransform(springScroll, [800, 1600], [0, 5]),
-            opacity: useTransform(springScroll, [800, 1200, 1600, 2000], [0, 1, 1, 0])
-          }}
-        >
-          <ParticleGlobe />
-        </motion.group>
+        <HeroObject />
+        <ParticleGlobe />
       </SceneCanvas>
 
       <main className="flex-1 bg-transparent relative selection:bg-primary/30 flex flex-col">

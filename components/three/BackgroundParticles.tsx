@@ -48,9 +48,11 @@ export default function BackgroundParticles({ count = 2000 }) {
             <bufferGeometry>
                 <bufferAttribute
                     attach="attributes-position"
-                    count={particles.positions.length / 3}
-                    array={particles.positions}
-                    itemSize={3}
+                    {...({
+                        count: particles.positions.length / 3,
+                        array: particles.positions,
+                        itemSize: 3,
+                    } as any)}
                 />
             </bufferGeometry>
             <pointsMaterial
